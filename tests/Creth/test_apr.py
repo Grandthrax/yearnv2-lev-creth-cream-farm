@@ -37,7 +37,7 @@ def test_apr_creth(web3, chain, cream, vault, enormousrunningstrategy, whale, go
     stateOfVault(vault, enormousrunningstrategy)
 
     for i in range(10):
-        assert vault.creditAvailable(enormousrunningstrategy) == 0
+        
         waitBlock = 100
         print(f'\n----wait {waitBlock} blocks----')
         wait(waitBlock, chain)
@@ -45,6 +45,7 @@ def test_apr_creth(web3, chain, cream, vault, enormousrunningstrategy, whale, go
         harvest(enormousrunningstrategy, strategist, vault)
         stateOfStrat(enormousrunningstrategy, currency, cream)
         stateOfVault(vault, enormousrunningstrategy)
+        #print(vault.creditAvailable(enormousrunningstrategy)/1e18)
 
         profit = (vault.totalAssets() - startingBalance).to('ether')
         strState = vault.strategies(enormousrunningstrategy)
@@ -61,6 +62,8 @@ def test_apr_creth(web3, chain, cream, vault, enormousrunningstrategy, whale, go
         apr = (totalReturns/startingBalance) * (blocks_per_year / time)
         print(f'implied apr: {apr:.8%}')
     vault.withdraw(vault.balanceOf(whale), {'from': whale})
+    stateOfStrat(enormousrunningstrategy, currency, cream)
+    stateOfVault(vault, enormousrunningstrategy)
 
 
 

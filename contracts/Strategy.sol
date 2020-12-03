@@ -54,7 +54,7 @@ interface bPool{
  *
  ********************* */
 
-contract Strategy is BaseStrategy, DydxFlashloanBase, ICallee {
+contract Strategy is BaseStrategy {
     using SafeERC20 for IERC20;
     using Address for address;
     using SafeMath for uint256;
@@ -107,7 +107,7 @@ contract Strategy is BaseStrategy, DydxFlashloanBase, ICallee {
         profitFactor = 50; // multiple before triggering harvest
 
         //borrowing weth
-        dyDxMarketId = _getMarketIdFromTokenAddress(SOLO, weth);
+//        dyDxMarketId = _getMarketIdFromTokenAddress(SOLO, weth);
 
         //we do this horrible thing because you can't compare strings in solidity
         require(keccak256(bytes(apiVersion())) == keccak256(bytes(VaultAPI(_vault).apiVersion())), "WRONG VERSION");
@@ -120,10 +120,10 @@ contract Strategy is BaseStrategy, DydxFlashloanBase, ICallee {
     /*
      * Control Functions
      */
-    function setDyDx(bool _dydx) external {
+    /*function setDyDx(bool _dydx) external {
         require(msg.sender == governance() || msg.sender == strategist, "!management"); // dev: not governance or strategist
         DyDxActive = _dydx;
-    }
+    }*/
 
     function setMinCompToSell(uint256 _minCompToSell) external {
         require(msg.sender == governance() || msg.sender == strategist, "!management"); // dev: not governance or strategist
@@ -135,10 +135,10 @@ contract Strategy is BaseStrategy, DydxFlashloanBase, ICallee {
         minWant = _minWant;
     }
 
-    function updateMarketId() external {
+    /*function updateMarketId() external {
         require(msg.sender == governance() || msg.sender == strategist, "!management"); // dev: not governance or strategist
         dyDxMarketId = _getMarketIdFromTokenAddress(SOLO, address(want));
-    }
+    }*/
 
     function setCollateralTarget(uint256 _collateralTarget) external {
         require(msg.sender == governance() || msg.sender == strategist, "!management"); // dev: not governance or strategist
@@ -501,7 +501,7 @@ contract Strategy is BaseStrategy, DydxFlashloanBase, ICallee {
                     i++;
                 }
             } else {
-                //if there is huge position to improve we want to do normal leverage. it is quicker
+               /* //if there is huge position to improve we want to do normal leverage. it is quicker
                 if (position > want.balanceOf(SOLO)) {
                     position = position.sub(_noFlashLoan(position, deficit));
                 }
@@ -510,7 +510,7 @@ contract Strategy is BaseStrategy, DydxFlashloanBase, ICallee {
                 if(position > 0){
                     doDyDxFlashLoan(deficit, position);
                 }
-
+*/
             }
         }
     }
@@ -529,9 +529,9 @@ contract Strategy is BaseStrategy, DydxFlashloanBase, ICallee {
         //If there is no deficit we dont need to adjust position
         if (deficit) {
             //we do a flash loan to give us a big gap. from here on out it is cheaper to use normal deleverage. Use Aave for extremely large loans
-            if (DyDxActive) {
+            /*if (DyDxActive) {
                 position = position.sub(doDyDxFlashLoan(deficit, position));
-            }
+            }*/
 
             uint8 i = 0;
             //position will equal 0 unless we haven't been able to deleverage enough with flash loan
@@ -633,11 +633,11 @@ contract Strategy is BaseStrategy, DydxFlashloanBase, ICallee {
             //if we cant afford to withdraw we take all we can
             //withdraw all we can
             _withdrawSome(lent);
-            return want.balanceOf(address(this));
+            return Math.min(want.balanceOf(address(this)), _amountNeeded);
         } else {
             if (_balance < _amountNeeded) {
                 _withdrawSome(_amountNeeded.sub(_balance));
-                _amountFreed = want.balanceOf(address(this));
+                _amountFreed = Math.min(want.balanceOf(address(this)), _amountNeeded);
             }else{
                 _amountFreed = _balance - _amountNeeded;
             }
@@ -810,7 +810,7 @@ contract Strategy is BaseStrategy, DydxFlashloanBase, ICallee {
     /******************
      * Flash loan stuff
      ****************/
-
+/*
     // Flash loan DXDY
     // amount desired is how much we are willing for position to change
     function doDyDxFlashLoan(bool deficit, uint256 amountDesired) internal returns (uint256) {
@@ -871,7 +871,7 @@ contract Strategy is BaseStrategy, DydxFlashloanBase, ICallee {
         require(msg.sender == SOLO, "NOT_SOLO");
 
         _loanLogic(deficit, amount, repayAmount);
-    }
+    }*/
 
     
 }

@@ -1,5 +1,5 @@
 from itertools import count
-from brownie import Wei, reverts, network
+from brownie import Wei, reverts, network, interface
 import brownie
 import requests
 
@@ -41,8 +41,8 @@ def stateOfStrat(strategy, dai, comp):
     
     deposits, borrows = strategy.getCurrentPosition()
     compBal = comp.balanceOf(strategy)
-    print('Comp:', Wei(compBal).to('ether'))
-    print('DAI:',dai.balanceOf(strategy).to('ether'))
+    print('Cream:', Wei(compBal).to('ether'))
+    print('creth:',dai.balanceOf(strategy).to('ether'))
     print('borrows:', Wei(borrows).to('ether'))  
     print('deposits:', Wei(deposits).to('ether'))
     realbalance = dai.balanceOf(strategy) + deposits - borrows
@@ -67,7 +67,7 @@ def genericStateOfStrat(strategy, currency, vault):
     decimals = currency.decimals()
     print(f"\n----state of {strategy.name()}----")
 
-    print("Want:", currency.balanceOf(strategy)/  (1 ** decimals))
+    print("Want:", currency.balanceOf(strategy)/  (10 ** decimals))
     print("Total assets estimate:", strategy.estimatedTotalAssets()/  (10 ** decimals))
     strState = vault.strategies(strategy)
     totalDebt = strState[5]/  (10 ** decimals)
@@ -101,6 +101,11 @@ def assertCollateralRatio(strategy):
 
 def stateOfVault(vault, strategy):
     print('\n----state of vault----')
+
+    currency = interface.ERC20(vault.token())
+    decimals = currency.decimals()
+    balanceIn = currency.balanceOf(vault) /  (10 ** decimals)
+    print(f'Want Balance in Vault: {balanceIn:.5f}')
     strState = vault.strategies(strategy)
     totalDebt = strState[5].to('ether')
     totalReturns = strState[6].to('ether')

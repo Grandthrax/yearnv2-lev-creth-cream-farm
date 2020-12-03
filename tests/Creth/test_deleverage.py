@@ -3,8 +3,10 @@ from brownie import Wei, reverts
 from useful_methods import stateOfStrat, genericStateOfStrat, stateOfVault, deposit,wait, withdraw, harvest,assertCollateralRatio
 import brownie
 
-def test_collat_zero(web3, chain, comp, vault, enormousrunningstrategy, whale, gov, dai, strategist):
-    stateOfStrat(enormousrunningstrategy, dai, comp)
+def test_collat_zero(web3, chain, cream, vault, enormousrunningstrategy, whale, gov, currency, strategist):
+    dai = currency
+    
+    stateOfStrat(enormousrunningstrategy, dai, cream)
     stateOfVault(vault, enormousrunningstrategy)
 
     enormousrunningstrategy.setCollateralTarget(0, {"from": gov})
@@ -14,20 +16,22 @@ def test_collat_zero(web3, chain, comp, vault, enormousrunningstrategy, whale, g
         newCollat = enormousrunningstrategy.storedCollateralisation() 
         assert lastCollat> newCollat
         lastCollat= newCollat
-        stateOfStrat(enormousrunningstrategy, dai, comp)
+        stateOfStrat(enormousrunningstrategy, dai, cream)
         stateOfVault(vault, enormousrunningstrategy)
     
     enormousrunningstrategy.setEmergencyExit({"from": gov})
     enormousrunningstrategy.harvest({'from': gov})
 
-    stateOfStrat(enormousrunningstrategy, dai, comp)
+    stateOfStrat(enormousrunningstrategy, dai, cream)
     genericStateOfStrat(enormousrunningstrategy, dai, vault)
     stateOfVault(vault, enormousrunningstrategy)
     strState = vault.strategies(enormousrunningstrategy)
     #losses == 0 with elegent big withdrawal
     assert strState[7] == 0
 
-def test_huge_withdrawal(web3, chain, comp, vault, enormousrunningstrategy, whale, gov, dai, strategist):
+def test_huge_withdrawal(web3, chain, cream, vault, enormousrunningstrategy, whale, gov, currency, strategist):
+    currency = dai
+    comp = cream
     stateOfStrat(enormousrunningstrategy, dai, comp)
     stateOfVault(vault, enormousrunningstrategy)
     print('\nwhale withdraws')
@@ -41,7 +45,10 @@ def test_huge_withdrawal(web3, chain, comp, vault, enormousrunningstrategy, whal
     enormousrunningstrategy.harvest{'from': gov})
 
 
-def test_enourmous_exit(web3, chain, comp, vault, enormousrunningstrategy, whale, gov, dai, strategist):
+def test_enourmous_exit(web3, chain, cream, vault, enormousrunningstrategy, whale, gov, currency, strategist):
+    comp = cream
+    currency = dai
+
     stateOfStrat(enormousrunningstrategy, dai, comp)
     stateOfVault(vault, enormousrunningstrategy)
 
