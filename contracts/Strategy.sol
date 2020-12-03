@@ -114,7 +114,7 @@ contract Strategy is BaseStrategy {
     }
 
     function name() external override pure returns (string memory){
-        return "GenericLevCompFarm";
+        return "LevCreth2CreamFarm";
     }
 
     /*

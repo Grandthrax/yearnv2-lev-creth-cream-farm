@@ -82,13 +82,13 @@ def dai(interface):
 def usdc(interface):
     yield interface.ERC20('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48')
 
-#@pytest.fixture
-#def live_vault(Vault):
-#    yield Vault.at('0x9B142C2CDAb89941E9dcd0B6C1cf6dEa378A8D7C')
+@pytest.fixture
+def live_vault(Vault):
+    yield Vault.at('0x20Eb2A369b71C29FC4aFCddBbc1CAB66CCfcB062')
 
-#@pytest.fixture
-#def live_strategy(YearnDaiCompStratV2):
-#    yield YearnDaiCompStratV2.at('0x4C6e9d7E5d69429100Fcc8afB25Ea980065e2773')
+@pytest.fixture
+def live_strategy(Strategy):
+    yield Strategy.at('0x879B28502223C4F97Fd38dEad123cb7a0214486B')
 
 
 #@pytest.fixture

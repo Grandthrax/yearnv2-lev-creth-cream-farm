@@ -4,13 +4,20 @@ from useful_methods import genericStateOfStrat, withdraw, stateOfVault,stateOfSt
 import random
 import brownie
 
-def test_screenshot(live_vault_dai2, Contract, web3, accounts, chain, cdai, comp, dai, live_strategy_dai2,currency, whale,samdev):
-    strategist = samdev
-    strategy = live_strategy_dai2
-    vault = live_vault_dai2
+def test_screenshot(live_vault,live_strategy, Contract, web3, accounts, chain,cream, currency,samdev, whale):
+    vault = live_vault
+    strategy = live_strategy
+    print(vault.apiVersion())
 
-    stateOfStrat(strategy, dai, comp)
-    genericStateOfVault(vault, dai)
+
+    currency.approve(vault, 2 ** 256 - 1, {'from': whale})
+
+    vault.deposit(5* 1e18, {'from': whale})
+    strategy.harvest({'from': samdev})
+
+    stateOfStrat(strategy, currency, cream)
+    stateOfVault(vault, strategy)
+
 
 def test_add_keeper(live_vault_dai2, Contract, web3, accounts, chain, cdai, comp, dai, live_strategy_dai2,currency, whale,samdev):
     strategist = samdev
