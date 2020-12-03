@@ -23,7 +23,7 @@ def test_sweep(web3,strategy, dai,cdai, gov, comp):
 
     
 
-def test_apr_dai(web3, chain, comp, vault, enormousrunningstrategy, whale, gov, dai, strategist):
+def test_apr_creth(web3, chain, cream, vault, enormousrunningstrategy, whale, gov, currency, strategist):
     enormousrunningstrategy.setProfitFactor(1, {"from": strategist} )
     assert(enormousrunningstrategy.profitFactor() == 1)
 
@@ -33,17 +33,17 @@ def test_apr_dai(web3, chain, comp, vault, enormousrunningstrategy, whale, gov, 
 
     startingBalance = vault.totalAssets()
 
-    stateOfStrat(enormousrunningstrategy, dai, comp)
+    stateOfStrat(enormousrunningstrategy, currency, cream)
     stateOfVault(vault, enormousrunningstrategy)
 
     for i in range(10):
         assert vault.creditAvailable(enormousrunningstrategy) == 0
-        waitBlock = 25
+        waitBlock = 100
         print(f'\n----wait {waitBlock} blocks----')
         wait(waitBlock, chain)
         
         harvest(enormousrunningstrategy, strategist, vault)
-        stateOfStrat(enormousrunningstrategy, dai, comp)
+        stateOfStrat(enormousrunningstrategy, currency, cream)
         stateOfVault(vault, enormousrunningstrategy)
 
         profit = (vault.totalAssets() - startingBalance).to('ether')
