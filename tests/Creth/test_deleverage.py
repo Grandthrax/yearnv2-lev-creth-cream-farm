@@ -27,27 +27,12 @@ def test_collat_zero(web3, chain, cream, vault, enormousrunningstrategy, whale, 
     stateOfVault(vault, enormousrunningstrategy)
     strState = vault.strategies(enormousrunningstrategy)
     #losses == 0 with elegent big withdrawal
-    assert strState[7] == 0
-
-def test_huge_withdrawal(web3, chain, cream, vault, enormousrunningstrategy, whale, gov, currency, strategist):
-    currency = dai
-    comp = cream
-    stateOfStrat(enormousrunningstrategy, dai, comp)
-    stateOfVault(vault, enormousrunningstrategy)
-    print('\nwhale withdraws')
-    vault.withdraw({'from': whale})
-    strState = vault.strategies(strategy)
-    assert enormousrunningstrategy.estimatedTotalAssets() < vault.strategies(strategy)[5]
-    stateOfStrat(enormousrunningstrategy, dai, comp)
-    genericStateOfStrat(enormousrunningstrategy, dai, vault)
-    stateOfVault(vault, enormousrunningstrategy)
-
-    enormousrunningstrategy.harvest{'from': gov})
+    assert strState[7] < 1e16
 
 
 def test_enourmous_exit(web3, chain, cream, vault, enormousrunningstrategy, whale, gov, currency, strategist):
     comp = cream
-    currency = dai
+    dai = currency
 
     stateOfStrat(enormousrunningstrategy, dai, comp)
     stateOfVault(vault, enormousrunningstrategy)

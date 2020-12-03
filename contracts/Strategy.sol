@@ -5,8 +5,8 @@ pragma experimental ABIEncoderV2;
 
 import "@yearnvaults/contracts/BaseStrategy.sol";
 
-import "./Interfaces/DyDx/DydxFlashLoanBase.sol";
-import "./Interfaces/DyDx/ICallee.sol";
+//import "./Interfaces/DyDx/DydxFlashLoanBase.sol";
+//import "./Interfaces/DyDx/ICallee.sol";
 
 import "@openzeppelinV3/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelinV3/contracts/math/SafeMath.sol";
@@ -67,7 +67,7 @@ contract Strategy is BaseStrategy {
     event Leverage(uint256 amountRequested, uint256 amountGiven, bool deficit, address flashLoan);
 
     //Flash Loan Providers
-    address private constant SOLO = 0x1E0447b19BB6EcFdAe1e4AE1694b0C3659614e4e;
+    //address private constant SOLO = 0x1E0447b19BB6EcFdAe1e4AE1694b0C3659614e4e;
 
     // Comptroller address for compound.finance
     ComptrollerI public constant comptroller = ComptrollerI(0x3d5BC3c8d13dcB8bF317092d84783c2697AE9258);
@@ -92,7 +92,7 @@ contract Strategy is BaseStrategy {
     //To deactivate flash loan provider if needed
     bool public DyDxActive = false;
 
-    uint256 public dyDxMarketId;
+    //uint256 public dyDxMarketId;
 
     constructor(address _vault) public BaseStrategy(_vault)  {
         
@@ -100,7 +100,7 @@ contract Strategy is BaseStrategy {
         IERC20(cream).safeApprove(uniswapRouter, uint256(-1));
         IERC20(weth).safeApprove(address(bpool), uint256(-1));
         want.safeApprove(address(cToken), uint256(-1));
-        IERC20(weth).safeApprove(SOLO, uint256(-1));
+        //IERC20(weth).safeApprove(SOLO, uint256(-1));
 
         // You can set these parameters on deployment to whatever you want
         minReportDelay = 86400; // once per 24 hours
@@ -806,6 +806,15 @@ contract Strategy is BaseStrategy {
         protected[3] = weth;
         return protected;
     }
+    
+    //returns our current collateralisation ratio. Should be compared with collateralTarget
+    function storedCollateralisation() public view returns (uint256 collat) {
+        (uint256 lend, uint256 borrow) = getCurrentPosition();
+        if (lend == 0) {
+            return 0;
+        }
+        collat = uint256(1e18).mul(borrow).div(lend);
+    }
 
     /******************
      * Flash loan stuff
@@ -852,14 +861,6 @@ contract Strategy is BaseStrategy {
         return amount;
     }
 
-    //returns our current collateralisation ratio. Should be compared with collateralTarget
-    function storedCollateralisation() public view returns (uint256 collat) {
-        (uint256 lend, uint256 borrow) = getCurrentPosition();
-        if (lend == 0) {
-            return 0;
-        }
-        collat = uint256(1e18).mul(borrow).div(lend);
-    }
 
     //DyDx calls this function after doing flash loan
     function callFunction(
